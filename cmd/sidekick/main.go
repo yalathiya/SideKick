@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/yalathiya/sidekick/internal/logging"
 )
 
 // defaultUpstream is a temporary upstream used for the smoke test.
@@ -41,10 +42,10 @@ func main() {
 	// useful middlewares from chi
 	r.Use(middleware.RequestID)                 // creates X-Request-ID
 	r.Use(middleware.RealIP)                    // respect X-Forwarded-For
-	r.Use(middleware.Logger)                    // basic logging to stdout (for dev)
+	r.Use(logging.Middleware)                   // basic logging to stdout (for dev)
 	r.Use(middleware.Recoverer)                 // recover from panics and return 500
 	r.Use(middleware.Timeout(30 * time.Second)) // timeout per request
-
+	
 	// health endpoint
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
