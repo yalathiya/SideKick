@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/yalathiya/sidekick/internal/logging"
+	"github.com/yalathiya/sidekick/internal/metrics"
 	"github.com/yalathiya/sidekick/internal/ratelimit"
 )
 
@@ -33,6 +34,9 @@ func newReverseProxy(target string) *httputil.ReverseProxy {
 
 func main() {
 	r := chi.NewRouter()
+
+	// register metrics
+	metrics.Register()
 
 	// Core middlewares
 	r.Use(middleware.RequestID) // X-Request-ID
