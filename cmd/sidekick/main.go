@@ -33,9 +33,9 @@ func newReverseProxy(target string) *httputil.ReverseProxy {
 }
 
 func main() {
+
 	r := chi.NewRouter()
 
-	// register metrics
 	metrics.Register()
 
 	// Core middlewares
@@ -44,6 +44,8 @@ func main() {
 
 	// Your custom logging middleware (logs after response)
 	r.Use(logging.Middleware)
+
+	r.Use(metrics.Middleware)
 
 	// Rate limiter: 5 requests per 10s per client
 	lim := ratelimit.NewLimiter(5, 10*time.Second)
@@ -59,8 +61,7 @@ func main() {
 	})
 
 	r.Get("/metrics", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("# metrics placeholder\n"))
+		metrics.Handler().ServeHTTP(w, r)
 	})
 
 	// proxy catch-all
